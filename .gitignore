@@ -1,0 +1,6 @@
+.terraform
+.idea
+.vscode
+.vagrant
+.config
+

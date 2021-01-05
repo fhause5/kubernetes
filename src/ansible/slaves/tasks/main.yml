@@ -1,0 +1,19 @@
+---
+# tasks file for slaves
+
+- name: Installsshpass
+  shell: yum install -q -y sshpass 
+
+- name: Copy joincluster.sh
+  copy:
+    src: /tmp/joincluster.sh
+    dest: /tmp/
+    owner: root
+    group: root
+    mode: 0644  
+    
+- name: Join worker nodes to the Kubernetes cluster
+  script: /tmp/joincluster.sh
+  args: 
+    executable: bash
+  

@@ -1,0 +1,11 @@
+[all:vars]
+ansible_connection=ssh
+ansible_user=root
+ansible_ssh_pass=kubeadmin
+
+[master]
+172.42.42.100
+
+[slaves]
+172.42.42.101
+172.42.42.102

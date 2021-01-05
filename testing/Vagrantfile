@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
+Vagrant.configure(2) do |config|
+
+
+	config.vm.define "ansible" do |ansible|
+		ansible.vm.box = "centos/7"
+		ansible.vm.hostname = "ansible.example.com"
+		ansible.vm.network "public_network",
+      use_dhcp_assigned_default_route: true
+    ansible.vm.synced_folder "tmp", "/tmp", disabled: true
+    ansible.vm.network "private_network", ip: "172.42.42.99"
+		ansible.vm.provider "virtualbox" do |v|
+			v.name = "ansible"
+			v.memory = 512
+			v.cpus = 1
+	  end
+	end
+end

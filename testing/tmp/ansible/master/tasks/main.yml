@@ -1,0 +1,42 @@
+---
+
+- name: Initialize Kubernetes
+  shell: kubeadm init --apiserver-advertise-address={{ master_cidr }} --pod-network-cidr={{ pod_cidr }} >> /root/kubeinit.log 2>/dev/null
+  ignore_errors: yes
+- name: Copy Kube admin config
+  shell: |
+    mkdir /home/{{ user }}/.kube
+    cp /etc/kubernetes/admin.conf /home/{{ user }}/.kube/config
+    chown -R {{ user }}:{{ user }} /home/{{ user }}/.kube
+
+- name: Copy Kube admin config to root
+  shell: |
+    mkdir /root/.kube
+    cp /etc/kubernetes/admin.conf /root/.kube/config
+
+# CHANGE
+- name: Copy kube-flannel.yml
+  copy:
+    src: /home/{{ user }}/ansible/kube-flannel.yml
+    dest: /tmp
+    owner: root
+    group: root
+    mode: 0644
+
+
+- name: Deploy flannel network
+  shell: kubectl apply -f /tmp/kube-flannel.yml
+
+- name: Delete yaml flannel
+  shell: rm -rf /tmp/kube-flannel.yml
+
+- name: Generate Cluster join command
+  shell: kubeadm token create --print-join-command > /tmp/joincluster.sh
+
+- name: Copy to Ansible node joincluster.sh from master
+  fetch:
+    src: /tmp/joincluster.sh
+    dest: /tmp/
+    flat: yes
+
+  

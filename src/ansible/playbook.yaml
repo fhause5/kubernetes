@@ -1,0 +1,18 @@
+---
+- name: shell
+  hosts: master
+  become: yes
+  roles:
+  - role: master
+
+- name: shell
+  hosts: slaves
+  become: yes
+  roles:
+  - role: slaves
+
+- name: shell
+  hosts: master
+  become: yes
+  roles:
+  - role: kubernetes-components

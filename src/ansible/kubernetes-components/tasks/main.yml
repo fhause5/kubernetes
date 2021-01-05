@@ -1,0 +1,10 @@
+---
+# tasks file for kubernetes-components
+
+- name: Initialize Kubernetes Dashboard
+  shell: kubectl create -f /vagrant/src/yaml/dasshboard_v2.0.0-rc7.yaml
+
+- name: Initialize ARGO CD
+  shell: |
+    kubectl create namespace argocd
+    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml

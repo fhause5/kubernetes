@@ -1,0 +1,60 @@
+---
+
+- name: shell
+  hosts: kworker1
+  become: yes
+
+  vars:
+    container_name: python
+
+  tasks:
+
+  - name: Install pip
+    shell: |
+      curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+      python get-pip.py
+      rm -rf get-pip.py
+
+  - name: Copy dynamic inventory to the host
+    copy:
+      src: /vagrant/src/yaml/docker_dynamic_inventory.py
+      dest: /tmp
+
+  - name: Copy requirements to the host
+    copy:
+      src: /vagrant/src/yaml/requirements.txt
+      dest: /tmp
+
+  - name: Install requirements
+    shell: pip install -r /tmp/requirements.txt
+
+  - name: Chmod docker_dynamic_inventory
+    shell: chmod +x /tmp/docker_dynamic_inventory.py
+
+  tasks:
+  - name: Connect to docker hosts
+    shell: ansible all -m ping -i /tmp/docker_dynamic_inventory.py
+    register: results
+    ignore_errors: yes
+  - debug:
+      var: results
+
+  - set_fact:
+      value: "{{ results.stdout | regex_findall(regexp, '\\2') }}"
+    vars:
+      regexp: '(^{{ container_name }}_\w*)'
+  - debug:
+      var: value
+
+  - name: Create a converted variable
+    set_fact:
+      converted: "{{ value[0] }}"
+  - debug:
+      var: converted
+
+
+  - name: Connect to container_name
+    shell: ansible {{ converted }} -m shell -a "uname -a" -i /tmp/docker_dynamic_inventory.py
+    register: output
+  - debug:
+      var: output

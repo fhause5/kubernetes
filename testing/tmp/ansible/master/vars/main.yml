@@ -1,0 +1,6 @@
+---
+# vars file for master
+
+user: vagrant
+master_cidr: 172.42.42.100
+pod_cidr: 10.244.0.0/16
