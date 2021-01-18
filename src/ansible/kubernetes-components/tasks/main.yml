@@ -1,10 +1,21 @@
 ---
 # tasks file for kubernetes-components
 
-- name: Initialize Kubernetes Dashboard
-  shell: kubectl create -f /vagrant/src/yaml/dasshboard_v2.0.0-rc7.yaml
+# - name: Initialize Kubernetes Dashboard
+#   shell: kubectl create -f /vagrant/src/yaml/dasshboard_v2.0.0-rc7.yaml
 
-- name: Initialize ARGO CD
+# - name: Initialize ARGO CD
+#   shell: |
+#     kubectl create namespace argocd
+#     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+- name: Initialize HELM
   shell: |
-    kubectl create namespace argocd
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+- name: Set up MetalLB Load Balancing for Bare Metal Kubernetes
+  shell: |
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.5/manifests/namespace.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.5/manifests/metallb.yaml
+    kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+
