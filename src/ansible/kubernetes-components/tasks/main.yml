@@ -37,7 +37,7 @@
   shell: |
     kubectl taint node kmaster.example.com node-role.kubernetes.io/master:NoSchedule-
  
- - name:  Deploy and use Nginx ingress controller
+- name:  Deploy and use Nginx ingress controller
   shell: |
     helm repo add stable https://charts.helm.sh/stable
     helm install test-nginx-ingress stable/nginx-ingress --set rbac.create=true
